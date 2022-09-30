@@ -63,7 +63,6 @@ resource "random_string" "suffix" {
 }
 
 resource "google_compute_ha_vpn_gateway" "gateway" {
-  provider = google-beta
   name     = "ha-vpn-gw-to-aws-${data.aws_region.current.name}-${local.suffix}"
   project  = data.google_project.project.project_id
   network  = var.google_network
@@ -141,7 +140,6 @@ resource "aws_vpn_connection" "vpn-beta" {
 }
 
 resource "google_compute_router" "router" {
-  provider    = google-beta
   name        = "cr-to-aws-tgw-ha-vpn-${data.aws_region.current.name}-${local.suffix}"
   network     = var.google_network
   description = "Google to AWS via Transit GW connection for AWS region ${data.aws_region.current.name}"
@@ -177,7 +175,6 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
-  provider        = google-beta
   name            = "aws-${var.transit_gateway_id}-${data.aws_region.current.name}-${local.suffix}"
   redundancy_type = "FOUR_IPS_REDUNDANCY"
   description     = "AWS Transit GW: ${var.transit_gateway_id} in AWS region ${data.aws_region.current.name}"
@@ -192,7 +189,6 @@ resource "google_compute_external_vpn_gateway" "external_gateway" {
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {
-  provider                        = google-beta
   for_each                        = local.external_vpn_gateway_interfaces
   name                            = "tunnel${each.key}-${google_compute_router.router.name}"
   description                     = "Tunnel to AWS - HA VPN interface ${each.key} to AWS interface ${each.value.tunnel_address}"
@@ -206,7 +202,6 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 }
 
 resource "google_compute_router_interface" "interfaces" {
-  provider   = google-beta
   for_each   = local.external_vpn_gateway_interfaces
   name       = "interface${each.key}-${google_compute_router.router.name}"
   router     = google_compute_router.router.name
@@ -215,7 +210,6 @@ resource "google_compute_router_interface" "interfaces" {
 }
 
 resource "google_compute_router_peer" "router_peers" {
-  provider        = google-beta
   for_each        = local.external_vpn_gateway_interfaces
   name            = "peer${each.key}-${google_compute_router.router.name}"
   router          = google_compute_router.router.name
