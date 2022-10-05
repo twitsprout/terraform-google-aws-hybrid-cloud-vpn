@@ -63,9 +63,9 @@ resource "random_string" "suffix" {
 }
 
 resource "google_compute_ha_vpn_gateway" "gateway" {
-  name     = "ha-vpn-gw-to-aws-${data.aws_region.current.name}-${local.suffix}"
-  project  = data.google_project.project.project_id
-  network  = var.google_network
+  name    = "ha-vpn-gw-to-aws-${data.aws_region.current.name}-${local.suffix}"
+  project = data.google_project.project.project_id
+  network = var.google_network
 }
 
 # Can't loop the cgw because TF errors with : Terraform value depends on resource attributes that cannot be determined
@@ -99,6 +99,7 @@ resource "aws_vpn_connection" "vpn-alpha" {
   customer_gateway_id                  = aws_customer_gateway.cgw-alpha.id
   transit_gateway_id                   = var.transit_gateway_id
   type                                 = aws_customer_gateway.cgw-alpha.type
+  enable_acceleration                  = var.enable_acceleration
   tunnel1_phase1_encryption_algorithms = var.aws_vpn_configs.encryption_algorithms
   tunnel2_phase1_encryption_algorithms = var.aws_vpn_configs.encryption_algorithms
   tunnel1_phase1_integrity_algorithms  = var.aws_vpn_configs.integrity_algorithms
@@ -121,6 +122,7 @@ resource "aws_vpn_connection" "vpn-beta" {
   customer_gateway_id                  = aws_customer_gateway.cgw-beta.id
   transit_gateway_id                   = var.transit_gateway_id
   type                                 = aws_customer_gateway.cgw-beta.type
+  enable_acceleration                  = var.enable_acceleration
   tunnel1_phase1_encryption_algorithms = var.aws_vpn_configs.encryption_algorithms
   tunnel2_phase1_encryption_algorithms = var.aws_vpn_configs.encryption_algorithms
   tunnel1_phase1_integrity_algorithms  = var.aws_vpn_configs.integrity_algorithms

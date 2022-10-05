@@ -61,3 +61,9 @@ variable "router_advertise_config" {
     mode      = string
   })
 }
+
+variable "enable_acceleration" {
+  type        = bool
+  default     = false
+  description = "Enable/disable AWS Global Accelerator for site-to-site VPN connections"
+}
